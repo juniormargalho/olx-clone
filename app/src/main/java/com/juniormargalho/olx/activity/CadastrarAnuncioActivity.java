@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.juniormargalho.olx.R;
 import com.juniormargalho.olx.helper.Permissoes;
+import com.juniormargalho.olx.model.Anuncio;
 import com.santalu.maskedittext.MaskEditText;
 
 import java.util.ArrayList;
@@ -34,11 +35,11 @@ public class CadastrarAnuncioActivity extends AppCompatActivity implements View.
     private CurrencyEditText campoValor;
     private MaskEditText campoTelefone;
     private String[] permissoes = new String[]{
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    };
+            Manifest.permission.READ_EXTERNAL_STORAGE};
     private ImageView imagem1, imagem2, imagem3;
     private List<String> listaFotosRecuperadas = new ArrayList<>();
     private Spinner campoEstado, campoCategoria;
+    private Anuncio anuncio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,25 +53,48 @@ public class CadastrarAnuncioActivity extends AppCompatActivity implements View.
         carregarDadosSpinner();
     }
 
-    public void validarDadosAnuncio(View view){
-        String fone = "";
+    public void salvarAnuncio() {
+        for(int i = 0; i < listaFotosRecuperadas.size(); i++){
+            String urlImagem = listaFotosRecuperadas.get(i);
+            //salvarFotoStorage(urlImagem, listaFotosRecuperadas.size(), i);
+        }
+    }
+
+    private Anuncio configurarAnuncio(){
         String estado = campoEstado.getSelectedItem().toString();
         String categoria = campoCategoria.getSelectedItem().toString();
         String titulo = campoTitulo.getText().toString();
         String valor = String.valueOf(campoValor.getRawValue());
         String telefone = campoTelefone.getText().toString();
+        String descricao = campoDescricao.getText().toString();
+
+        Anuncio anuncio = new Anuncio();
+        anuncio.setEstado(estado);
+        anuncio.setCategoria(categoria);
+        anuncio.setTitulo(titulo);
+        anuncio.setValor(valor);
+        anuncio.setTelefone(telefone);
+        anuncio.setDescricao(descricao);
+
+        return anuncio;
+    }
+
+    public void validarDadosAnuncio(View view){
+
+        anuncio = configurarAnuncio();
+
+        String fone = "";
         if(campoTelefone.getRawText() != null){
             fone = campoTelefone.getRawText().toString();
         }
-        String descricao = campoDescricao.getText().toString();
 
         if(listaFotosRecuperadas.size() != 0){
-            if(!estado.isEmpty()){
-                if(!categoria.isEmpty()){
-                    if(!titulo.isEmpty()){
-                        if(!valor.isEmpty() && !valor.equals("0")){
-                            if(!telefone.isEmpty() && fone.length() >= 11){
-                                if(!descricao.isEmpty()){
+            if(!anuncio.getEstado().isEmpty()){
+                if(!anuncio.getCategoria().isEmpty()){
+                    if(!anuncio.getTitulo().isEmpty()){
+                        if(!anuncio.getValor().isEmpty() && !anuncio.getValor().equals("0")){
+                            if(!anuncio.getTelefone().isEmpty() && fone.length() >= 11){
+                                if(!anuncio.getDescricao().isEmpty()){
                                     salvarAnuncio();
                                 }else {
                                     exibirMensagemErro("Preencha o campo descrição!");
@@ -97,11 +121,6 @@ public class CadastrarAnuncioActivity extends AppCompatActivity implements View.
 
     private void exibirMensagemErro(String mensagem){
         Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
-    }
-
-    public void salvarAnuncio() {
-        String valor = campoValor.getText().toString();
-        Toast.makeText(this, "Valor:" + valor, Toast.LENGTH_SHORT).show();
     }
 
     @Override
