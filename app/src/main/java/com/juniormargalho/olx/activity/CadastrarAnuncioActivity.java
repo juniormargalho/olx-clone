@@ -52,10 +52,56 @@ public class CadastrarAnuncioActivity extends AppCompatActivity implements View.
         carregarDadosSpinner();
     }
 
-    public void salvarAnuncio(View view) {
+    public void validarDadosAnuncio(View view){
+        String fone = "";
+        String estado = campoEstado.getSelectedItem().toString();
+        String categoria = campoCategoria.getSelectedItem().toString();
+        String titulo = campoTitulo.getText().toString();
+        String valor = String.valueOf(campoValor.getRawValue());
+        String telefone = campoTelefone.getText().toString();
+        if(campoTelefone.getRawText() != null){
+            fone = campoTelefone.getRawText().toString();
+        }
+        String descricao = campoDescricao.getText().toString();
+
+        if(listaFotosRecuperadas.size() != 0){
+            if(!estado.isEmpty()){
+                if(!categoria.isEmpty()){
+                    if(!titulo.isEmpty()){
+                        if(!valor.isEmpty() && !valor.equals("0")){
+                            if(!telefone.isEmpty() && fone.length() >= 11){
+                                if(!descricao.isEmpty()){
+                                    salvarAnuncio();
+                                }else {
+                                    exibirMensagemErro("Preencha o campo descrição!");
+                                }
+                            }else {
+                                exibirMensagemErro("Preencha o campo telefone!");
+                            }
+                        }else {
+                            exibirMensagemErro("Preencha o campo valor!");
+                        }
+                    }else {
+                        exibirMensagemErro("Preencha o campo título!");
+                    }
+                }else {
+                    exibirMensagemErro("Selecione uma categoria!");
+                }
+            }else {
+                exibirMensagemErro("Selecione um estado!");
+            }
+        }else {
+            exibirMensagemErro("Selecione ao menos uma foto!");
+        }
+    }
+
+    private void exibirMensagemErro(String mensagem){
+        Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
+    }
+
+    public void salvarAnuncio() {
         String valor = campoValor.getText().toString();
         Toast.makeText(this, "Valor:" + valor, Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
