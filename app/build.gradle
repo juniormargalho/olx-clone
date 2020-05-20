@@ -36,4 +36,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:18.0.0'
     implementation 'com.github.BlacKCaT27:CurrencyEditText:2.0.2'
     implementation 'com.github.santalu:mask-edittext:1.1.1'
+    implementation 'com.github.d-max:spots-dialog:1.1@aar'
 }
