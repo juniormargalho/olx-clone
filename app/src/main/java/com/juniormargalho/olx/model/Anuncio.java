@@ -1,5 +1,8 @@
 package com.juniormargalho.olx.model;
 
+import com.google.firebase.database.DatabaseReference;
+import com.juniormargalho.olx.helper.ConfiguracaoFirebase;
+
 import java.util.List;
 
 public class Anuncio {
@@ -13,6 +16,15 @@ public class Anuncio {
     private List<String> fotos;
 
     public Anuncio() {
+        DatabaseReference anuncioRef = ConfiguracaoFirebase.getFirebase().child("meus_anuncios");
+        setIdAnuncio(anuncioRef.push().getKey());
+    }
+
+    public void salvar(){
+        String idUsuario = ConfiguracaoFirebase.getIdUsuario();
+
+        DatabaseReference anuncioRef = ConfiguracaoFirebase.getFirebase().child("meus_anuncios");
+        anuncioRef.child(idUsuario).child(getIdAnuncio()).setValue(this);
     }
 
     public String getIdAnuncio() {
