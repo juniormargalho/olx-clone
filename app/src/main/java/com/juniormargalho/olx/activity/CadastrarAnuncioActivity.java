@@ -139,8 +139,8 @@ public class CadastrarAnuncioActivity extends AppCompatActivity implements View.
         }
 
         if(listaFotosRecuperadas.size() != 0){
-            if(!anuncio.getEstado().isEmpty()){
-                if(!anuncio.getCategoria().isEmpty()){
+            if(!anuncio.getEstado().equals("Selecione")){
+                if(!anuncio.getCategoria().equals("Selecione")){
                     if(!anuncio.getTitulo().isEmpty()){
                         if(!valor.isEmpty() && !valor.equals("0")){
                             if(!anuncio.getTelefone().isEmpty() && fone.length() >= 11){
