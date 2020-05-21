@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -41,6 +42,8 @@ public class AnunciosActivity extends AppCompatActivity {
     private DatabaseReference anunciosPublicosRef;
     private AlertDialog dialog;
     private String filtroEstado;
+    private String filtroCategoria;
+    private boolean filtrandoPorEstado = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,58 @@ public class AnunciosActivity extends AppCompatActivity {
         recuperarAnunciosPublicos();
     }
 
+    public void filtrarPorCategoria(View view){
+        if(filtrandoPorEstado == true){
+            AlertDialog.Builder dialogEstado = new AlertDialog.Builder(this);
+            dialogEstado.setTitle("Selecione a categoria desejada");
+            View viewSpinner = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
+
+            final Spinner spinnerCategoria = viewSpinner.findViewById(R.id.spinnerFiltro);
+            String[] categorias = getResources().getStringArray(R.array.categorias);
+            ArrayAdapter<String> adapterCategoria = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categorias);
+            adapterCategoria.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerCategoria.setAdapter(adapterCategoria);
+            dialogEstado.setView(viewSpinner);
+
+            dialogEstado.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    filtroCategoria = spinnerCategoria.getSelectedItem().toString();
+                    recuperarAnunciosPorCategoria();
+                }
+            });
+            dialogEstado.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            AlertDialog dialog = dialogEstado.create();
+            dialog.show();
+        }else {
+            Toast.makeText(this, "Selecione primeiro uma região!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void recuperarAnunciosPorCategoria(){
+        anunciosPublicosRef = ConfiguracaoFirebase.getFirebase().child("anuncios").child(filtroEstado).child(filtroCategoria);
+        anunciosPublicosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaAnuncios.clear();
+                for(DataSnapshot anuncios: dataSnapshot.getChildren()){
+                    Anuncio anuncio = anuncios.getValue(Anuncio.class);
+                    listaAnuncios.add(anuncio);
+                }
+                Collections.reverse(listaAnuncios);
+                adapterAnuncios.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
     public void filtrarPorEstado(View view){
         AlertDialog.Builder dialogEstado = new AlertDialog.Builder(this);
         dialogEstado.setTitle("Selecione o estado desejado");
@@ -79,6 +134,7 @@ public class AnunciosActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 filtroEstado = spinnerEstado.getSelectedItem().toString();
                 recuperarAnunciosPorEstado();
+                filtrandoPorEstado = true;
             }
         });
         dialogEstado.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -178,5 +234,6 @@ public class AnunciosActivity extends AppCompatActivity {
     public void inicializarComponentes(){
         recyclerAnunciosPublicos = findViewById(R.id.recyclerAnunciosPublicos);
         filtroEstado = "";
+        filtroCategoria = "";
     }
 }
